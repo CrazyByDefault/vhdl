@@ -52,3 +52,19 @@ We're gonna be building ghdl with a gcc backend. This will take slightly more di
 	```
 
 Now, you can use ghdl normally as a terminal command to compile and run vhdl files! :D
+
+##### This is how to compile and run a vhdl file
+
+Write a vhdl code in a text file and save it with `.vhdl` file extension. 
+
+In the directory run this command 
+	`export PATH=/opt/ghdl-updates/bin/:$PATH`
+
+Run the following command to compile the file
+	`ghdl -a file_name.vhdl`
+
+Then you have to build excutable file (`-e` means elaborate)
+	`ghdl -e entity_name`
+
+An executable file `entity_name` is generated. To run the file excute the following command
+	`ghdl -r entity_name`
