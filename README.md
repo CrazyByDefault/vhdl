@@ -72,7 +72,7 @@ An executable file `entity_name` is generated. To run the file excute the follow
 #### GTKWave
 
 To install GTKWave, run the following in the terminal
-	`sudo apt-get install ghdl gtkwave`
+	`sudo apt-get install gtkwave`
 
 Follow this step while running the executable file to create waveform file (VCD format)
 	`ghdl -r excutable_file --vcd=file_name.vcd`
