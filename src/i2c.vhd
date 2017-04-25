@@ -25,7 +25,7 @@ entity i2c is
     type state_t is (idle, start_addr_tx, write, read, slave_hit_addr, slave_hit_data, done);
     
     signal state_reg : state_t := idle;
-    signal bit_cnt : integer range 0 to 8 := '0';
+    signal bit_cnt : integer range 0 to 8 := 0;
   
     --Master
     signal data_to_send : std_logic_vector(7 downto 0) := (others => '0');
@@ -53,7 +53,7 @@ entity i2c is
           when idle =>
             if sda = '1' then
               state_reg <= start_addr_tx;
-              bit_cnt <= '0';
+              bit_cnt <= 0;
             end if;
 
 
@@ -70,12 +70,12 @@ entity i2c is
 
               if bit_cnt = 8 and falling_edge(clk) then
                 bit_cnt <= 0;
-                state_reg = slave_hit_addr;
+                state_reg <= slave_hit_addr;
               end if;
 
 
           when slave_hit_addr =>
-            if addr_reg = addr_to_send_to;
+            if addr_reg = addr_to_send_to then
               ack_from_slave <= '0';
             end if;
 
@@ -88,9 +88,13 @@ entity i2c is
             end if;
 
           when slave_hit_data =>
+            ack_from_slave <= '0';
+            state_reg <= done;
+
+
+          when done =>
+            null;
             
-
-
 
           when write =>
             if rising_edge(clk) then
@@ -107,14 +111,25 @@ entity i2c is
 
           when read =>
             assert false
-              report ("WHY ARE YOU READING? WHYYY?");
+              report ("WHY ARE YOU READING? WHYYY?")
               severity note;
             state_reg <= idle;
 
+
+
+        end case;
+
+        if sda = '1' then
+          state_reg   <= start_addr_tx;
+          bit_cnt     <= 0;
+        end if;
+
+      end if;
+    end process;
 
 
 
 
                     
   
-  end architecture ; -- arch
+  end architecture arch; -- arch
