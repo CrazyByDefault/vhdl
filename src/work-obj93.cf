@@ -1,4 +1,0 @@
-v 4
-file . "RNG.vhdl" "806f30f8ae256a08f2920d42b1ed8ed46a190cc9" "20170419200127.015":
-  entity rng at 1( 0) + 0 on 17;
-  architecture behavior of rng at 11( 141) + 0 on 18;
