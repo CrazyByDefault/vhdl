@@ -21,15 +21,17 @@ architecture arch of i2c_tb is
 	end component; 
 
 	constant T : time := 1000 ns;
-	shared variable done_tx : boolean := false;
+	signal done_tx : boolean := false;
 	signal rw_bit : std_logic := '0';
 	signal sda, scl : std_logic := '1'; 
 	signal ack_one, ack_two : std_logic;
 	signal data_to_master : std_logic_vector(7 downto 0) := "10101010";
 	signal data_recieved_at_slave : std_logic_vector(7 downto 0);
+
 	--signal master_puppy : std_logic_vector(7 downto 0) := "10101010";
 	--signal pet_puppy : std_logic_vector(7 downto 0) := "10101010";
-	variable bit_cnt : integer range 0 to 8 := 0;
+	signal bit_cnt : integer range 0 to 8 := 0;
+	constant slave_addr : std_logic_vector :=  "0101001";
 
 begin -- begin Architecture
 
@@ -45,6 +47,7 @@ begin -- begin Architecture
 
 		--clock
 	process 
+	begin
 		if done_tx = false then	
 			scl <= '0';
 			wait for T/2;
@@ -57,14 +60,14 @@ begin -- begin Architecture
 
 	-- assigning data and address to sda and and sending it to slave register. 
 	process
-		
-		for i 6 downto 0 loop 
+	begin
+		for i in 6 downto 0 loop 
 			if (rising_edge(scl)) then 
 				sda <= slave_addr(i);
 				--bit_cnt <= bit_cnt + 1; 
 			end if;
 		end loop;
-		if bit_cnt = 6 and  then 
+		if bit_cnt = 6 then 
 			sda <= rw_bit;
 		end if;
 
@@ -79,7 +82,7 @@ begin -- begin Architecture
     	wait for 1 us;
     	
     	if ack_one = '0' then
-			for i 7 downto 0 loop
+			for i in 7 downto 0 loop
 				if rising_edge(scl) then
 					sda <= data_to_master(i);
 					--bit_cnt <= bit_cnt + 1;
