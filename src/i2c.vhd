@@ -9,8 +9,7 @@ entity i2c is
 
   port (
     
-    scl : in std_logic;
-    sda : in std_logic;
+    clk : in std_logic;
     ack_one : in std_logic;
     ack_two : in std_logic;
 
@@ -30,7 +29,7 @@ entity i2c is
   
     --Master
     signal data_to_send : std_logic_vector(7 downto 0) := (others => '0');
-    signal addr_to_send_to : std_logic_vector(6 downto 0) := SLAVE_ADDR;
+    signal addr_to_send_to : std_logic_vector(6 downto 0) := ('0', '1', '0', '1', '0', '0', '1');
     signal rw_bit : std_logic := '0';
     signal ack_from_slave : std_logic := '1';
 
@@ -76,21 +75,34 @@ entity i2c is
 
 
           when slave_hit_addr =>
-            if addr_reg = addr_to_send_to then
-              ack_from_slave <= '0';
-            end if;
+            --if addr_reg = addr_to_send_to then
+             ack_from_slave <= ack_one;
+            --end if;
+
+
 
             if falling_edge(clk) and ack_from_slave = '0' then
               if rw_bit = '0' then
                 state_reg <= write;
               else
                 state_reg <= read;
+            else 
+            	assert false
+            	  report ("no ack after data, switching to idle")
+            	  severity note;
+            	state_reg <= idle;
               end if;
             end if;
 
           when slave_hit_data =>
-            ack_from_slave <= '0';
-            state_reg <= done;
+            ack_from_slave <= ack_two;
+            if ack_from_slave = '0' then 
+            	state_reg <= done;
+            else 
+            	assert false
+            	  report ("no ack after data, switching to idle")
+            	  severity note;
+            	state_reg <= idle;
 
 
           when done =>
