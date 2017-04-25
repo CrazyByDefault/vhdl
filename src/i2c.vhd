@@ -9,7 +9,8 @@ entity i2c is
 
   port (
     
-    clk : in std_logic;
+    scl : in std_logic;
+    sda : in std_logic;
     ack_one : in std_logic;
     ack_two : in std_logic;
 
@@ -29,7 +30,7 @@ entity i2c is
   
     --Master
     signal data_to_send : std_logic_vector(7 downto 0) := (others => '0');
-    signal addr_to_send_to : std_logic_vector(6 downto 0) := ('0', '1', '0', '1', '0', '0', '1');
+    signal addr_to_send_to : std_logic_vector(6 downto 0) := SLAVE_ADDR;
     signal rw_bit : std_logic := '0';
     signal ack_from_slave : std_logic := '1';
 
