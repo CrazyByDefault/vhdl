@@ -8,86 +8,93 @@ architecture arch of i2c_tb is
 	
 	-- Component declaration
 	component i2c is
+		--generic (slave_addr := std_logic_vector(6 downto 0));
 		port(
-
-			clk : in std_logic := '1';
+			sda : in std_logic := '1';
+			scl : in std_logic := '0';
 			ack_one : in std_logic;   -- adress
 			ack_two : in std_logic;   -- data
-			--rw_bit : in std_logic := '1';	
-			data_to_master : in std_logic_vector(7 downto 0) ;
+			--data_to_master : in std_logic_vector(7 downto 0) ;
 			data_recieved_at_slave : out std_logic_vector(7 downto 0)
 
 			);
 	end component; 
 
-
 	constant T : time := 1000 ns;
 	shared variable done_tx : boolean := false;
+	signal rw_bit : std_logic := '0';
+	signal sda, scl : std_logic := '1'; 
+	signal ack_one, ack_two : std_logic;
+	signal data_to_master : std_logic_vector(7 downto 0) := "10101010";
+	signal data_recieved_at_slave : std_logic_vector(7 downto 0);
+	--signal master_puppy : std_logic_vector(7 downto 0) := "10101010";
+	--signal pet_puppy : std_logic_vector(7 downto 0) := "10101010";
+	variable bit_cnt : integer range 0 to 8 := 0;
 
-	signal clk, ack_one, ack_two : std_logic;
-	signal data_to_master, data_recieved_at_slave : std_logic_vector(7 downto 0);
+begin -- begin Architecture
 
-	begin -- begin Architecture
-		mapping : i2c port map(clk => clk, ack_one => ack_one, ack_two => ack_two,
+		testbench : entity work.i2c 
+		-- mapping
+		generic map(slave_addr => "0101001")
+		port map(
+			sda => sda, scl => scl,
+			ack_one => ack_one, 
+			ack_two => ack_two, 
+			--data_to_master => data_to_master, 
+			data_recieved_at_slave => data_recieved_at_slave);
 
-		data_to_master => data_to_master, data_recieved_at_slave => data_recieved_at_slave);
+		--clock
+	process 
+		if done_tx = false then		
+			scl <= '0';
+			wait for T/2;
+			scl <= '1';
+			wait for T/2;
+		else
+			wait;
+		end if;
+	end process;
 
-		process 
-			if done_tx = false then		
-				clk <= '0';
-				wait for T/2;
-				clk <= '1';
-				wait for T/2;
-			else
-				wait;
-			end if;
-		end process;
-
-		procedure write_to(port ) is
-			if rising_edge(clk) then 
-
-			end if;
-		end procedure;
-
-		-- write a bit
-		procedure write_bit (
-      		constant a_bit : in std_logic) is
-    		begin
-    			
-    	end procedure write_bit;
-
-    	--Write a byte of data
-		procedure write_byte(
-    		constant a_byte : in std_logic_vector(7 downto 0)) is
-    		begin
-    			for i in 7 downto 0 loop
-        			write_bit(a_byte(i));
-      			end loop;
-    	end procedure write_byte;
-
-
-		process 
-			type pattern_type is record 
-				data_to_master, data_recieved_at_slave : std_logic_vector;
-				clk, ack_two, ack_one : std_logic;
-			end record;
-
-			type pattern_array is array (natural range <>) of pattern_type;
-			constant patterns : pattern_array := 			
+	process
 		
-
-			begin
-
-				for i in patterns'range loop
-
-
-				end loop;	
-
-		end process;
-
-
+		for i 6 downto 0 loop 
+			if (rising_edge(scl)) then 
+				sda <= slave_addr(i);
+				bit_cnt <= bit_cnt + 1; 
+			end if;
+		end loop;
+		if bit_cnt = 6 and  then 
+			sda <= rw_bit;
+		end if;
 
 
+		if bit_cnt = 7 and rising_edge(scl) then 
+			ack_one <= '0';
+			bit_cnt <= 0;
+		end if;
+
+    	assert (ack_one = '0') report ("address not recieved") severity error;
+
+    	wait for 1 us;
+    	
+    	if ack_one = '0' then
+			for i 7 downto 0 loop
+				if rising_edge(scl) then
+					sda <= data_to_master(i);
+					bit_cnt <= bit_cnt + 1;
+					data_recieved_at_slave(i) <= sda;
+				end if;
+			end loop;
+		end if;
+		if (bit_cnt = 7) then
+			ack_two <= '0';
+		end if;
+
+		assert (ack_two = '0') report ("data not recieved") severity error;
+		assert (data_recieved_at_slave = data_to_master) report ("data not transmitted properly") severity failure;
+		done_tx <= true;
+
+	end process;
 
 end arch;
 
