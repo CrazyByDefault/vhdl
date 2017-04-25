@@ -89,7 +89,7 @@ entity i2c is
                 state_reg <= read;
             else 
             	assert false
-            	  report ("no ack after data, switching to idle")
+            	  report ("no ack after addr, switching to idle")
             	  severity note;
             	state_reg <= idle;
               end if;
