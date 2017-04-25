@@ -9,7 +9,8 @@ entity i2c is
 
   port (
     
-    clk : in std_logic;
+    sda : in std_logic;
+    scl : in std_logic;
     ack_one : in std_logic;
     ack_two : in std_logic;
 
