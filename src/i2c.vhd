@@ -1,6 +1,9 @@
 library ieee;
+library std;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+--use ieee.std_logic_textio.all;
+use std.textio.all;
 
 entity i2c is
   generic (
@@ -34,6 +37,7 @@ entity i2c is
     signal rw_bit : std_logic := '0';
     signal ack_from_slave : std_logic := '1';
 
+
     --Medium
     --signal sda : std_logic := '1';
     --signal scl : std_logic := '1';
@@ -46,12 +50,14 @@ entity i2c is
     
     process (scl) is
     begin
+    
       if rising_edge(scl) then
 
 
         case state_reg is
 
           when idle =>
+            assert false report ("Bullshit is happening in idle");
             if sda = '1' then
               state_reg <= start_addr_tx;
               bit_cnt <= 0;
@@ -59,6 +65,7 @@ entity i2c is
 
 
           when start_addr_tx =>
+            assert false report ("Bullshit is happening in addr_tx");
             if rising_edge(scl) then
               if bit_cnt < 7 then
                 bit_cnt <= bit_cnt + 1;
@@ -77,6 +84,7 @@ entity i2c is
 
 
           when slave_hit_addr =>
+            assert false report ("Bullshit is happening in slave ack one state");
             --if addr_reg = addr_to_send_to then
              ack_from_slave <= ack_one;
             --end if;
@@ -96,6 +104,7 @@ entity i2c is
 
 
           when slave_hit_data =>
+            assert false report ("Bullshit is happening in slave ack two state");
             ack_from_slave <= ack_two;
             if ack_from_slave = '0' then 
             	state_reg <= done;
@@ -108,10 +117,12 @@ entity i2c is
 
 
           when done =>
+            assert false report ("Bullshit is happening in done");
             null;
             
 
           when write =>
+            assert false report ("Bullshit is happening in write state");
             if rising_edge(scl) then
               bit_cnt <= bit_cnt + 1;
               if bit_cnt < 8 then
@@ -125,6 +136,7 @@ entity i2c is
             end if;
 
           when read =>
+            assert false report ("Bullshit is happening in read state");
             assert false
               report ("WHY ARE YOU READING? WHYYY?")
               severity note;
