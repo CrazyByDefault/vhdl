@@ -45,7 +45,7 @@ begin -- begin Architecture
 
 		--clock
 	process 
-		if done_tx = false then		
+		if done_tx = false then	
 			scl <= '0';
 			wait for T/2;
 			scl <= '1';
@@ -55,12 +55,13 @@ begin -- begin Architecture
 		end if;
 	end process;
 
+	-- assigning data and address to sda and and sending it to slave register. 
 	process
 		
 		for i 6 downto 0 loop 
 			if (rising_edge(scl)) then 
 				sda <= slave_addr(i);
-				bit_cnt <= bit_cnt + 1; 
+				--bit_cnt <= bit_cnt + 1; 
 			end if;
 		end loop;
 		if bit_cnt = 6 and  then 
@@ -81,8 +82,8 @@ begin -- begin Architecture
 			for i 7 downto 0 loop
 				if rising_edge(scl) then
 					sda <= data_to_master(i);
-					bit_cnt <= bit_cnt + 1;
-					data_recieved_at_slave(i) <= sda;
+					--bit_cnt <= bit_cnt + 1;
+					--data_recieved_at_slave(i) <= sda;
 				end if;
 			end loop;
 		end if;
