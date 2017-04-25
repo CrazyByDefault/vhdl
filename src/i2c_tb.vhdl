@@ -66,13 +66,13 @@ begin -- begin Architecture
 				bit_cnt <= bit_cnt + 1; 
 			end if;
 		end loop;
-		if bit_cnt = 6 then 
+		if bit_cnt = 7 then 
 			sda <= rw_bit;
 			bit_cnt <= bit_cnt + 1;
 		end if;
 
 
-		if bit_cnt = 7 and rising_edge(scl) then 
+		if bit_cnt = 8 and rising_edge(scl) then 
 			ack_one <= '0';
 			bit_cnt <= 0;
 		end if;
@@ -90,7 +90,7 @@ begin -- begin Architecture
 				end if;
 			end loop;
 		end if;
-		if (bit_cnt = 7) then
+		if (bit_cnt = 8) then
 			ack_two <= '0';
 		end if;
 

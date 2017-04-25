@@ -115,7 +115,7 @@ entity i2c is
             if rising_edge(scl) then
               bit_cnt <= bit_cnt + 1;
               if bit_cnt < 8 then
-                data_storage(7 - bit_cnt) <= sda;
+                data_recieved_at_slave(7 - bit_cnt) <= sda;
               end if;
             end if;
 
