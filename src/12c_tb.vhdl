@@ -48,7 +48,7 @@ architecture arch of i2c_tb is
 		end process;
 
 
-
+--Fuck Shishirk VHDL is a shitty piece of shit I'm failing maxwell 
 
 
 end arch;
