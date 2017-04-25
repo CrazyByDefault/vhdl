@@ -5,51 +5,97 @@ entity i2c_tb is
 end i2c_tb;
 
 architecture arch of i2c_tb is
-	constant T : time := 1 us;
-
+	
+	-- Component declaration
 	component i2c is
+		--generic (slave_addr := std_logic_vector(6 downto 0));
 		port(
-
-			clk : in std_logic := '1';
-			ack_one : in std_logic;
-			ack_two : in std_logic;
-
-
-			data_to_master : in std_logic_vector(7 downto 0) ;
+			sda : in std_logic := '1';
+			scl : in std_logic := '0';
+			ack_one : in std_logic;   -- adress
+			ack_two : in std_logic;   -- data
+			--data_to_master : in std_logic_vector(7 downto 0) ;
 			data_recieved_at_slave : out std_logic_vector(7 downto 0)
 
 			);
-	end component; -- arch
+	end component; 
 
-	signal clk, ack_one, ack_two : std_logic;
-	signal data_to_master, data_recieved_at_slave : std_logic_vector(7 downto 0);
+	constant T : time := 1000 ns;
+	shared variable done_tx : boolean := false;
+	signal rw_bit : std_logic := '0';
+	signal sda, scl : std_logic := '1'; 
+	signal ack_one, ack_two : std_logic;
+	signal data_to_master : std_logic_vector(7 downto 0) := "10101010";
+	signal data_recieved_at_slave : std_logic_vector(7 downto 0);
+	--signal master_puppy : std_logic_vector(7 downto 0) := "10101010";
+	--signal pet_puppy : std_logic_vector(7 downto 0) := "10101010";
+	variable bit_cnt : integer range 0 to 8 := 0;
 
-	begin
-		mapping : i2c port map(clk => clk, ack_one => ack_one, ack_two => ack_two,
+begin -- begin Architecture
 
-		data_to_master => data_to_master, data_recieved_at_slave => data_recieved_at_slave);
+		testbench : entity work.i2c 
+		-- mapping
+		generic map(slave_addr => "0101001")
+		port map(
+			sda => sda, scl => scl,
+			ack_one => ack_one, 
+			ack_two => ack_two, 
+			--data_to_master => data_to_master, 
+			data_recieved_at_slave => data_recieved_at_slave);
 
-		process 
-			clk <= '0';
+		--clock
+	process 
+		if done_tx = false then	
+			scl <= '0';
 			wait for T/2;
-			clk <= '1';
+			scl <= '1';
 			wait for T/2;
-		end process;
+		else
+			wait;
+		end if;
+	end process;
 
-		process 
-			type pattern_type is record 
-				data_to_master, data_recieved_at_slave : std_logic_vector;
-				clk, ack_two, ack_one : std_logic;
-			end record;
+	-- assigning data and address to sda and and sending it to slave register. 
+	process
+		
+		for i 6 downto 0 loop 
+			if (rising_edge(scl)) then 
+				sda <= slave_addr(i);
+				--bit_cnt <= bit_cnt + 1; 
+			end if;
+		end loop;
+		if bit_cnt = 6 and  then 
+			sda <= rw_bit;
+		end if;
 
-			type pattern_array is array (natural range <>) of pattern_type;
-			constant patterns : pattern_array :=
-					
-		end process;
 
+		if bit_cnt = 7 and rising_edge(scl) then 
+			ack_one <= '0';
+			bit_cnt <= 0;
+		end if;
 
+    	assert (ack_one = '0') report ("address not recieved") severity error;
 
+    	wait for 1 us;
+    	
+    	if ack_one = '0' then
+			for i 7 downto 0 loop
+				if rising_edge(scl) then
+					sda <= data_to_master(i);
+					--bit_cnt <= bit_cnt + 1;
+					--data_recieved_at_slave(i) <= sda;
+				end if;
+			end loop;
+		end if;
+		if (bit_cnt = 7) then
+			ack_two <= '0';
+		end if;
 
+		assert (ack_two = '0') report ("data not recieved") severity error;
+		assert (data_recieved_at_slave = data_to_master) report ("data not transmitted properly") severity failure;
+		done_tx <= true;
+
+	end process;
 
 end arch;
 
