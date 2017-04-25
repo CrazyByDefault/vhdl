@@ -1,6 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
+use ieee.numeric_std.all;sclscl
 
 entity i2c is
   generic (
@@ -15,7 +15,7 @@ entity i2c is
     ack_two : in std_logic;
 
     --Data to the Master from the outside world
-    data_to_master : in std_logic_vector(7 downto 0);
+    --data_to_master : in std_logic_vector(7 downto 0);
     data_recieved_at_slave : out std_logic_vector(7 downto 0)
 
     );
