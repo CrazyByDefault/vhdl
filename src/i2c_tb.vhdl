@@ -28,12 +28,7 @@ architecture arch of i2c_tb is
 	signal data_to_master : std_logic_vector(7 downto 0) := "10101010";
 	signal data_recieved_at_slave : std_logic_vector(7 downto 0);
 	signal clk : std_logic := '1';
-<<<<<<< HEAD
-	signal bit_cnt : integer range 0 to 8 := 0;
-	constant slave_addr : std_logic_vector(6 downto 0) := "0101001";
-	signal blah_cnt : integer := 0;
 
-=======
 	signal tb_bit_cnt : integer :=  0;
 	constant slave_addr : std_logic_vector(6 downto 0) := "0101001";
 	signal blah_cnt : integer := 0;
@@ -41,7 +36,6 @@ architecture arch of i2c_tb is
 	type state_t is (idle, addr_tx, ack_one_state, ack_two_state);
 	signal state_reg : state_t := idle;
 
->>>>>>> master
 begin -- begin Architecture
 
 		testbench : entity work.i2c 
@@ -59,14 +53,6 @@ begin -- begin Architecture
 	begin
 		if done_tx = false then	
 			clk <= '0';
-<<<<<<< HEAD
-			wait for T/2;
-			clk <= '1';
-			wait for T/2;
-		else
-			wait;
-		end if;
-=======
 			scl <= clk;
 			wait for T/2;
 			clk <= '1';
@@ -75,7 +61,6 @@ begin -- begin Architecture
 		else
 			wait;
 		end if;		
->>>>>>> master
 	end process;
 ----ignore------------
 ---------------------------------------------------------------------------
@@ -95,56 +80,6 @@ begin -- begin Architecture
 		--end procedure;
 -------------------------------------------------------------------------------------
 	-- assigning data and address to sda and and sending it to slave register. 
-<<<<<<< HEAD
-	process(clk)
-	begin
-
-		
-		scl <= clk;
-		wait for 1 us;
-		if (rising_edge(clk)) then 
-			sda <= slave_addr(bit_cnt);
-			bit_cnt <= bit_cnt + 1; 
-			--wait for 1 us;
-		end if;
-		
-		if bit_cnt = 7 and rising_edge(clk) then 
-			sda <= rw_bit;
-			bit_cnt <= bit_cnt + 1;
-			--wait for 1 us;
-		end if;
-
-
-		if bit_cnt = 8 and rising_edge(clk) then 
-			ack_one <= '0';
-			bit_cnt <= 0;
-			--wait for 1 us;
-		end if;
-
-		assert (ack_one = '0') report ("address not recieved") severity error;
-
-		--wait for 1 us;
-		
-		if ack_one = '0' then
-			if rising_edge(clk) then
-				sda <= data_to_master(bit_cnt);
-				bit_cnt <= bit_cnt + 1;
-				--wait for 1 us;
-				--data_recieved_at_slave(i) <= sda;
-			end if;
-		end if;
-		if (bit_cnt = 8) and rising_edge(clk) then
-			ack_two <= '0';
-			--wait for 1 us;
-		end if;
-
-		assert (ack_two = '0') report ("data not recieved") severity error;
-		assert (data_recieved_at_slave = data_to_master) report ("data not transmitted properly") severity failure;
-		if blah_cnt = 19 then
-			done_tx <= true;
-		end if;
-	
-=======
 	process (clk)
 	begin		
 		if done_tx = false and blah_cnt > 2 then
@@ -229,7 +164,6 @@ begin -- begin Architecture
 			state_reg <= addr_tx;
 		end if;
 		assert false report(integer'image(tb_bit_cnt) & " " & integer'image(blah_cnt));
->>>>>>> master
 	end process;
 
 end arch;
