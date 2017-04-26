@@ -27,9 +27,10 @@ architecture arch of i2c_tb is
 	signal ack_one, ack_two : std_logic;
 	signal data_to_master : std_logic_vector(7 downto 0) := "10101010";
 	signal data_recieved_at_slave : std_logic_vector(7 downto 0);
+	signal clk : std_logic := '0';
 	--signal master_puppy : std_logic_vector(7 downto 0) := "10101010";
 	--signal pet_puppy : std_logic_vector(7 downto 0) := "10101010";
-	signal bit_cnt : integer range -1 to 8 := -1;
+	signal bit_cnt : integer range 0 to 9 := 0;
 	constant slave_addr : std_logic_vector(6 downto 0) := "0101001";
 begin -- begin Architecture
 
@@ -46,39 +47,47 @@ begin -- begin Architecture
 		--clock
 	process 
 	begin
+		--for i in 0 to 18 loop
 		if done_tx = false then	
-			scl <= '0';
+			clk <= '0';
 			wait for T/2;
-			scl <= '1';
+			clk <= '1';
 			wait for T/2;
 		else
 			wait;
-		end if;
+		end if;	
+		--end loop ; -- identifier
 	end process;
 
 	-- assigning data and address to sda and and sending it to slave register. 
-	process (scl)
+	process (clk) is
 	begin
 		--wait for 1 us;
 		--for i in 6 downto 0 loop 
-		if rising_edge(scl) and bit_cnt = -1 then
+		scl <= clk;
+
+		if bit_cnt = 0 then
+			assert false report ("TB - sent 1");
 			sda <= '1';
 			bit_cnt <= bit_cnt + 1;
-		end if ;
-		if (rising_edge(scl)) and bit_cnt = 0 then 
+		end if;
+		if bit_cnt = 1 then
+			assert false report ("TB - sending sda"); 
 			sda <= slave_addr(6 - bit_cnt);
 			bit_cnt <= bit_cnt + 1; 
 			--wait for 1 us;
 		end if;
 		--end loop;
-		if bit_cnt = 7 and rising_edge(scl) then 
+		if bit_cnt = 8 and rising_edge(clk) then 
+			assert false report ("TB - sending rw bit");
 			sda <= rw_bit;
 			bit_cnt <= bit_cnt + 1;
 			--wait for 1 us;
 		end if;
 
 
-		if bit_cnt = 8 and rising_edge(scl) then 
+		if bit_cnt = 9 and rising_edge(scl) then 
+			assert false report ("TB - sending ack_one");
 			ack_one <= '0';
 			bit_cnt <= 0;
 		end if;
