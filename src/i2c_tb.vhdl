@@ -79,7 +79,7 @@ begin -- begin Architecture
 
 		
 		scl <= clk;
-
+		wait for 1 us;
 		if (rising_edge(clk)) then 
 			sda <= slave_addr(bit_cnt);
 			bit_cnt <= bit_cnt + 1; 
