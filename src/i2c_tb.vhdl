@@ -57,18 +57,20 @@ begin -- begin Architecture
 	end process;
 
 	-- assigning data and address to sda and and sending it to slave register. 
-	process
+	process (scl)
 	begin
-		wait for 1 us;
-		for i in 6 downto 0 loop 
-			if (rising_edge(scl)) then 
-				sda <= slave_addr(i);
-				bit_cnt <= bit_cnt + 1; 
-			end if;
-		end loop;
+		--wait for 1 us;
+		--for i in 6 downto 0 loop 
+		if (rising_edge(scl)) then 
+			sda <= slave_addr(6 - bit_cnt);
+			bit_cnt <= bit_cnt + 1; 
+			--wait for 1 us;
+		end if;
+		--end loop;
 		if bit_cnt = 7 then 
 			sda <= rw_bit;
 			bit_cnt <= bit_cnt + 1;
+			--wait for 1 us;
 		end if;
 
 
@@ -79,16 +81,16 @@ begin -- begin Architecture
 
     	assert (ack_one = '0') report ("address not recieved") severity error;
 
-    	wait for 1 us;
     	
     	if ack_one = '0' then
-			for i in 7 downto 0 loop
-				if rising_edge(scl) then
-					sda <= data_to_master(i);
-					--bit_cnt <= bit_cnt + 1;
-					--data_recieved_at_slave(i) <= sda;
-				end if;
-			end loop;
+			--for i in 7 downto 0 loop
+			if rising_edge(scl) then
+				sda <= data_to_master(7 - bit_cnt);
+				--wait for 1 us;
+				--bit_cnt <= bit_cnt + 1;
+				--data_recieved_at_slave(i) <= sda;
+			end if;
+			--end loop;
 		end if;
 		if (bit_cnt = 8) then
 			ack_two <= '0';
