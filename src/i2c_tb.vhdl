@@ -30,6 +30,7 @@ architecture arch of i2c_tb is
 	signal clk : std_logic := '1';
 	signal bit_cnt : integer range 0 to 8 := 0;
 	constant slave_addr : std_logic_vector(6 downto 0) := "0101001";
+	signal blah_cnt : integer := 0;
 
 begin -- begin Architecture
 
@@ -44,7 +45,7 @@ begin -- begin Architecture
 			data_recieved_at_slave => data_recieved_at_slave);
 
 	--clock
-	process(clk)
+	process
 	begin
 		if done_tx = false then	
 			clk <= '0';
@@ -76,7 +77,6 @@ begin -- begin Architecture
 	process
 	begin
 
-		variable blah_cnt : integer := 0;
 
 		wait for 1 us;
 		
