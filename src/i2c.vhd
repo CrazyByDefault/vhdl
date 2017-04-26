@@ -52,13 +52,13 @@ entity i2c is
     begin
     
       if rising_edge(scl) then
-
+        assert false report ("Bullshit starts");
 
         case state_reg is
 
           when idle =>
-            assert false report ("Bullshit is happening in idle");
             if sda = '1' then
+              assert false report ("Bullshit is happening in idle");
               state_reg <= start_addr_tx;
               bit_cnt <= 0;
             end if;
@@ -68,18 +68,25 @@ entity i2c is
             assert false report ("Bullshit is happening in addr_tx");
             if rising_edge(scl) then
               if bit_cnt < 7 then
-                bit_cnt <= bit_cnt + 1;
                 addr_reg(6 - bit_cnt) <= sda;
-              elsif bit_cnt = 7 then
                 bit_cnt <= bit_cnt + 1;
+                assert false report ("entity: bit_cnt < 7");
+                assert false report (string'(bit_cnt));
+              end if;
+              
+              if bit_cnt = 7 then
+                bit_cnt <= bit_cnt + 1;
+                
+                assert false report ("entity: rw recieved at sda");
                 rw_bit <= sda;
-                end if;
               end if;
 
-              if bit_cnt = 8 and falling_edge(scl) then
+              if bit_cnt = 8 and rising_edge(scl) then
+                assert false report ("TB: going to ack_one_state");
                 bit_cnt <= 0;
                 state_reg <= slave_hit_addr;
               end if;
+            end if;
 
 
 

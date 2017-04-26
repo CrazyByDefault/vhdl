@@ -28,9 +28,12 @@ architecture arch of i2c_tb is
 	signal data_to_master : std_logic_vector(7 downto 0) := "10101010";
 	signal data_recieved_at_slave : std_logic_vector(7 downto 0);
 	signal clk : std_logic := '1';
-	signal bit_cnt : integer range 0 to 8 := 0;
+	signal bit_cnt : integer :=  0;
 	constant slave_addr : std_logic_vector(6 downto 0) := "0101001";
 	signal blah_cnt : integer := 0;
+
+	type state_t is (idle, addr_tx, ack_one_state, ack_two_state);
+	signal state_reg : state_t := idle;
 
 begin -- begin Architecture
 
@@ -49,12 +52,14 @@ begin -- begin Architecture
 	begin
 		if done_tx = false then	
 			clk <= '0';
+			scl <= clk;
 			wait for T/2;
 			clk <= '1';
+			scl <= clk;
 			wait for T/2;
 		else
 			wait;
-		end if;
+		end if;		
 	end process;
 ----ignore------------
 ---------------------------------------------------------------------------
@@ -74,54 +79,88 @@ begin -- begin Architecture
 		--end procedure;
 -------------------------------------------------------------------------------------
 	-- assigning data and address to sda and and sending it to slave register. 
-	process
-	begin
+	process (clk)
+	begin		
+		if done_tx = false and blah_cnt > 2 then
+			if state_reg = addr_tx then
 
+				if bit_cnt = 0 and rising_edge(clk) then
+					sda <= '1';
+					bit_cnt <= bit_cnt + 1;
+					blah_cnt <= blah_cnt + 1;			
+					assert false report ("TB: Sent init 1");
+				end if;
 
-		wait for 1 us;
-		
-		scl <= clk;
+				if bit_cnt < 8 and bit_cnt > 0  and rising_edge(clk) then 
+					assert false report ("TB: Sending address");
+					sda <= slave_addr(bit_cnt - 1);
+					bit_cnt <= bit_cnt + 1;
+					blah_cnt <= blah_cnt + 1; 
+					--wait for 1 us;
+				end if;
+				
+				if bit_cnt = 8 and rising_edge(clk) then 
+					assert false report ("TB: Sending rw bit");
+					sda <= rw_bit;
+					assert false report ("TB: 1");
+					bit_cnt <= bit_cnt + 1;
+					assert false report ("TB: 2");
+					blah_cnt <= blah_cnt + 1;
+					assert false report ("TB: 3");
+					state_reg <= ack_one_state;
+					assert false report ("TB: Leaving addr_tx");
+					--wait for 1 us;
+				end if;
 
-		if (rising_edge(clk)) then 
-			sda <= slave_addr(bit_cnt);
-			bit_cnt <= bit_cnt + 1; 
-			--wait for 1 us;
-		end if;
-		
-		if bit_cnt = 7 and rising_edge(clk) then 
-			sda <= rw_bit;
-			bit_cnt <= bit_cnt + 1;
-			--wait for 1 us;
-		end if;
-
-
-		if bit_cnt = 8 and rising_edge(clk) then 
-			ack_one <= '0';
-			bit_cnt <= 0;
-			--wait for 1 us;
-		end if;
-
-		assert (ack_one = '0') report ("address not recieved") severity error;
-
-		--wait for 1 us;
-		
-		if ack_one = '0' then
-			if rising_edge(clk) then
-				sda <= data_to_master(bit_cnt);
-				bit_cnt <= bit_cnt + 1;
-				--wait for 1 us;
-				--data_recieved_at_slave(i) <= sda;
 			end if;
-		end if;
-		if (bit_cnt = 8) and rising_edge(clk) then
-			ack_two <= '0';
-			--wait for 1 us;
-		end if;
 
-		assert (ack_two = '0') report ("data not recieved") severity error;
-		assert (data_recieved_at_slave = data_to_master) report ("data not transmitted properly") severity failure;
-		if blah_cnt = 19 then
-			done_tx <= true;
+
+			if state_reg = ack_one_state then
+				assert false report ("TB: in ack_one_state");
+				if bit_cnt = 9 and rising_edge(clk) then 
+					assert false report ("TB: ack_one");
+					ack_one <= '0';
+					bit_cnt <= 0;
+
+				end if;
+
+				assert (ack_one = '0') report ("address not recieved") severity error;
+
+				--wait for 1 us;
+				
+				if ack_one = '0' and bit_cnt < 8 then
+					if rising_edge(clk) then
+						sda <= data_to_master(bit_cnt);
+						bit_cnt <= bit_cnt + 1;
+						blah_cnt <= blah_cnt + 1;
+						--wait for 1 us;
+						--data_recieved_at_slave(i) <= sda;
+					end if;
+
+					if bit_cnt = 8 then
+						state_reg <= ack_two_state;						
+					end if ;
+				end if;
+
+			end if;
+
+			if state_reg = ack_two_state then
+
+				if (bit_cnt = 8) and rising_edge(clk) then
+					ack_two <= '0';
+					--wait for 1 us;
+				end if;
+				
+			end if ;
+
+			assert (ack_two = '0') report ("data not recieved") severity error;
+			--assert (data_recieved_at_slave = data_to_master) report ("data not transmitted properly") severity error;
+			if blah_cnt = 21 then
+				done_tx <= true;
+			end if;
+		else
+			blah_cnt <= blah_cnt + 1;
+			state_reg <= addr_tx;
 		end if;
 	
 	end process;
