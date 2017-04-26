@@ -29,7 +29,7 @@ architecture arch of i2c_tb is
 	signal data_recieved_at_slave : std_logic_vector(7 downto 0);
 	--signal master_puppy : std_logic_vector(7 downto 0) := "10101010";
 	--signal pet_puppy : std_logic_vector(7 downto 0) := "10101010";
-	signal bit_cnt : integer range 0 to 8 := 0;
+	signal bit_cnt : integer range -1 to 8 := -1;
 	constant slave_addr : std_logic_vector(6 downto 0) := "0101001";
 begin -- begin Architecture
 
@@ -61,13 +61,17 @@ begin -- begin Architecture
 	begin
 		--wait for 1 us;
 		--for i in 6 downto 0 loop 
-		if (rising_edge(scl)) then 
+		if rising_edge(scl) and bit_cnt = -1 then
+			sda <= '1';
+			bit_cnt <= bit_cnt + 1;
+		end if ;
+		if (rising_edge(scl)) and bit_cnt = 0 then 
 			sda <= slave_addr(6 - bit_cnt);
 			bit_cnt <= bit_cnt + 1; 
 			--wait for 1 us;
 		end if;
 		--end loop;
-		if bit_cnt = 7 then 
+		if bit_cnt = 7 and rising_edge(scl) then 
 			sda <= rw_bit;
 			bit_cnt <= bit_cnt + 1;
 			--wait for 1 us;
@@ -82,7 +86,7 @@ begin -- begin Architecture
     	assert (ack_one = '0') report ("address not recieved") severity error;
 
     	
-    	if ack_one = '0' then
+    	if ack_one = '0' and rising_edge(scl) then
 			--for i in 7 downto 0 loop
 			if rising_edge(scl) then
 				sda <= data_to_master(7 - bit_cnt);
@@ -92,7 +96,7 @@ begin -- begin Architecture
 			end if;
 			--end loop;
 		end if;
-		if (bit_cnt = 8) then
+		if (bit_cnt = 8) and rising_edge(scl) then
 			ack_two <= '0';
 		end if;
 
