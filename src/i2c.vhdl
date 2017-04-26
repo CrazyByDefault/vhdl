@@ -66,27 +66,26 @@ entity i2c is
 
           when start_addr_tx =>
             assert false report ("Bullshit is happening in addr_tx");
-            if rising_edge(scl) then
-              if bit_cnt < 7 then
-                addr_reg(6 - bit_cnt) <= sda;
-                bit_cnt <= bit_cnt + 1;
-                assert false report ("entity: bit_cnt < 7");
-                assert false report (string'(bit_cnt));
-              end if;
-              
-              if bit_cnt = 7 then
-                bit_cnt <= bit_cnt + 1;
-                
-                assert false report ("entity: rw recieved at sda");
-                rw_bit <= sda;
-              end if;
-
-              if bit_cnt = 8 and rising_edge(scl) then
-                assert false report ("TB: going to ack_one_state");
-                bit_cnt <= 0;
-                state_reg <= slave_hit_addr;
-              end if;
+            if bit_cnt < 7 and rising_edge(scl) then
+              --addr_reg(6 - bit_cnt) <= sda;
+              bit_cnt <= bit_cnt + 1;
+              assert false report ("entity: bit_cnt < 7");
+              assert false report (integer'image(bit_cnt));
             end if;
+            
+            if bit_cnt = 7 and rising_edge(scl) then
+              bit_cnt <= bit_cnt + 1;
+              
+              rw_bit <= sda;
+              assert false report ("entity: rw recieved at sda");
+            end if;
+
+            if bit_cnt = 8 and rising_edge(scl) then
+              assert false report ("entity: going to ack_one_state");
+              bit_cnt <= 0;
+              state_reg <= slave_hit_addr;
+            end if;
+          
 
 
 
