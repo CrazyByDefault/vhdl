@@ -24,14 +24,14 @@ architecture arch of i2c_tb is
 	signal done_tx : boolean := false;
 	signal rw_bit : std_logic := '0';
 	signal sda, scl : std_logic := '1'; 
-	signal ack_one, ack_two : std_logic;
+	signal ack_one, ack_two : std_logic := '0';
 	signal data_to_master : std_logic_vector(7 downto 0) := "10101010";
 	signal data_recieved_at_slave : std_logic_vector(7 downto 0);
-	signal clk : std_logic := '0';
-	--signal master_puppy : std_logic_vector(7 downto 0) := "10101010";
-	--signal pet_puppy : std_logic_vector(7 downto 0) := "10101010";
-	signal bit_cnt : integer range 0 to 9 := 0;
+	signal clk : std_logic := '1';
+	signal bit_cnt : integer range 0 to 8 := 0;
 	constant slave_addr : std_logic_vector(6 downto 0) := "0101001";
+	signal blah_cnt : integer := 0;
+
 begin -- begin Architecture
 
 		testbench : entity work.i2c 
@@ -44,10 +44,9 @@ begin -- begin Architecture
 			--data_to_master => data_to_master, 
 			data_recieved_at_slave => data_recieved_at_slave);
 
-		--clock
-	process 
+	--clock
+	process
 	begin
-		--for i in 0 to 18 loop
 		if done_tx = false then	
 			clk <= '0';
 			wait for T/2;
@@ -55,64 +54,76 @@ begin -- begin Architecture
 			wait for T/2;
 		else
 			wait;
-		end if;	
-		--end loop ; -- identifier
+		end if;
 	end process;
-
+----ignore------------
+---------------------------------------------------------------------------
+	--process 
+	--begin 
+	--	if done_tx = false then
+	--		scl <= not scl after T/2;
+	--	else
+	--		wait;
+	--	end if;
+	--end process;
+		--procedure wait_for(signal clk: std_logic; bool : boolean) is 
+		--begin 
+		--	for bool = true loop
+		--		wait until rising_edge(clk);
+		--	end loop;
+		--end procedure;
+-------------------------------------------------------------------------------------
 	-- assigning data and address to sda and and sending it to slave register. 
-	process (clk) is
+	process
 	begin
-		--wait for 1 us;
-		--for i in 6 downto 0 loop 
+
+
+		wait for 1 us;
+		
 		scl <= clk;
 
-		if bit_cnt = 0 then
-			assert false report ("TB - sent 1");
-			sda <= '1';
-			bit_cnt <= bit_cnt + 1;
-		end if;
-		if bit_cnt = 1 then
-			assert false report ("TB - sending sda"); 
-			sda <= slave_addr(6 - bit_cnt);
+		if (rising_edge(clk)) then 
+			sda <= slave_addr(bit_cnt);
 			bit_cnt <= bit_cnt + 1; 
 			--wait for 1 us;
 		end if;
-		--end loop;
-		if bit_cnt = 8 and rising_edge(clk) then 
-			assert false report ("TB - sending rw bit");
+		
+		if bit_cnt = 7 and rising_edge(clk) then 
 			sda <= rw_bit;
 			bit_cnt <= bit_cnt + 1;
 			--wait for 1 us;
 		end if;
 
 
-		if bit_cnt = 9 and rising_edge(scl) then 
-			assert false report ("TB - sending ack_one");
+		if bit_cnt = 8 and rising_edge(clk) then 
 			ack_one <= '0';
 			bit_cnt <= 0;
+			--wait for 1 us;
 		end if;
 
-    	assert (ack_one = '0') report ("address not recieved") severity error;
+		assert (ack_one = '0') report ("address not recieved") severity error;
 
-    	
-    	if ack_one = '0' and rising_edge(scl) then
-			--for i in 7 downto 0 loop
-			if rising_edge(scl) then
-				sda <= data_to_master(7 - bit_cnt);
+		--wait for 1 us;
+		
+		if ack_one = '0' then
+			if rising_edge(clk) then
+				sda <= data_to_master(bit_cnt);
+				bit_cnt <= bit_cnt + 1;
 				--wait for 1 us;
-				--bit_cnt <= bit_cnt + 1;
 				--data_recieved_at_slave(i) <= sda;
 			end if;
-			--end loop;
 		end if;
-		if (bit_cnt = 8) and rising_edge(scl) then
+		if (bit_cnt = 8) and rising_edge(clk) then
 			ack_two <= '0';
+			--wait for 1 us;
 		end if;
 
 		assert (ack_two = '0') report ("data not recieved") severity error;
 		assert (data_recieved_at_slave = data_to_master) report ("data not transmitted properly") severity failure;
-		done_tx <= true;
-
+		if blah_cnt = 19 then
+			done_tx <= true;
+		end if;
+	
 	end process;
 
 end arch;
