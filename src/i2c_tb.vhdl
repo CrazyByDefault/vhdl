@@ -27,7 +27,7 @@ architecture arch of i2c_tb is
 	signal ack_one, ack_two : std_logic := '0';
 	signal data_to_master : std_logic_vector(7 downto 0) := "10101010";
 	signal data_recieved_at_slave : std_logic_vector(7 downto 0);
-	
+	signal clk : std_logic := '1';
 	signal bit_cnt : integer range 0 to 8 := 0;
 	constant slave_addr : std_logic_vector(6 downto 0) := "0101001";
 
@@ -44,12 +44,12 @@ begin -- begin Architecture
 			data_recieved_at_slave => data_recieved_at_slave);
 
 	--clock
-	process(scl)
+	process(clk)
 	begin
 		if done_tx = false then	
-			scl <= '0';
+			clk <= '0';
 			wait for T/2;
-			scl <= '1';
+			clk <= '1';
 			wait for T/2;
 		else
 			wait;
@@ -76,24 +76,26 @@ begin -- begin Architecture
 	process
 	begin
 
-
+		variable blah_cnt : integer := 0;
 
 		wait for 1 us;
-		for i in 6 downto 0 loop 
-			if (rising_edge(scl)) then 
-				sda <= slave_addr(i);
-				bit_cnt <= bit_cnt + 1; 
-				--wait for 1 us;
-			end if;
-		end loop;
-		if bit_cnt = 7 then 
+		
+		scl <= clk;
+
+		if (rising_edge(clk)) then 
+			sda <= slave_addr(bit_cnt);
+			bit_cnt <= bit_cnt + 1; 
+			--wait for 1 us;
+		end if;
+		
+		if bit_cnt = 7 and rising_edge(clk) then 
 			sda <= rw_bit;
 			bit_cnt <= bit_cnt + 1;
 			--wait for 1 us;
 		end if;
 
 
-		if bit_cnt = 8 and rising_edge(scl) then 
+		if bit_cnt = 8 and rising_edge(clk) then 
 			ack_one <= '0';
 			bit_cnt <= 0;
 			--wait for 1 us;
@@ -104,24 +106,24 @@ begin -- begin Architecture
 		--wait for 1 us;
 		
 		if ack_one = '0' then
-			for i in 7 downto 0 loop
-				if rising_edge(scl) then
-					sda <= data_to_master(i);
-					bit_cnt <= bit_cnt + 1;
-					--wait for 1 us;
-					--data_recieved_at_slave(i) <= sda;
-				end if;
-			end loop;
+			if rising_edge(clk) then
+				sda <= data_to_master(bit_cnt);
+				bit_cnt <= bit_cnt + 1;
+				--wait for 1 us;
+				--data_recieved_at_slave(i) <= sda;
+			end if;
 		end if;
-		if (bit_cnt = 8) then
+		if (bit_cnt = 8) and rising_edge(clk) then
 			ack_two <= '0';
 			--wait for 1 us;
 		end if;
 
 		assert (ack_two = '0') report ("data not recieved") severity error;
 		assert (data_recieved_at_slave = data_to_master) report ("data not transmitted properly") severity failure;
-		done_tx <= true;
-
+		if blah_cnt = 19 then
+			done_tx <= true;
+		end if;
+	
 	end process;
 
 end arch;
