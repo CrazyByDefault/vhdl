@@ -70,7 +70,7 @@ entity i2c is
           when start_addr_tx =>
             assert false report ("entity:  is happening in addr_tx");
             if bit_cnt < 7 and rising_edge(scl) then
-              addr_reg(6 - bit_cnt) <= sda;
+              --addr_reg(6 - bit_cnt) <= sda;
               bit_cnt := bit_cnt + 1;
               assert false report ("entity: bit_cnt < 7");
               assert false report (integer'image(bit_cnt));
@@ -155,10 +155,10 @@ entity i2c is
 
         end case;
 
-        if sda = '1' then
-          state_reg   <= start_addr_tx;
-          bit_cnt     := 0;
-        end if;
+        --if sda = '1' and bit_cnt = 8 then
+        --  state_reg   <= start_addr_tx;
+        --  bit_cnt     := 0;
+        --end if;
 
       end if;
     end process;                    
