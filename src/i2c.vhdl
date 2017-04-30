@@ -2,11 +2,9 @@ library ieee;
 library std;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-<<<<<<< HEAD:src/i2c.vhd
-=======
 --use ieee.std_logic_textio.all;
 use std.textio.all;
->>>>>>> master:src/i2c.vhdl
+
 
 entity i2c is
   generic (

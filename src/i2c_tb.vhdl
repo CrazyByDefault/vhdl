@@ -125,7 +125,7 @@ begin -- begin Architecture
 
 				end if;
 
-				assert (ack_one = '0') report ("address not recieved") severity error;
+				assert (ack_one = '0') report ("address not recieved") severity note;
 
 				--wait for 1 us;
 				
@@ -154,8 +154,8 @@ begin -- begin Architecture
 				
 			end if ;
 
-			assert (ack_two = '0') report ("data not recieved") severity error;
-			--assert (data_recieved_at_slave = data_to_master) report ("data not transmitted properly") severity error;
+			assert (ack_two = '0') report ("data not recieved") severity note;
+			--assert (data_recieved_at_slave = data_to_master) report ("data not transmitted properly") severity note;
 			if blah_cnt = 50 then
 				done_tx <= true;
 			end if;
