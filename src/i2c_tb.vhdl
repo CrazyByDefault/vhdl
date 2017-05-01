@@ -82,7 +82,7 @@ begin -- begin Architecture
 	-- assigning data and address to sda and and sending it to slave register. 
 	process (clk)
 	begin		
-		if done_tx = false and blah_cnt > 2 then
+		if done_tx = false and blah_cnt > 1 then
 			if state_reg = addr_tx then
 
 				if tb_bit_cnt = 0 and rising_edge(clk) then
@@ -93,7 +93,7 @@ begin -- begin Architecture
 				end if;
 
 				if tb_bit_cnt < 8 and tb_bit_cnt > 0  and rising_edge(clk) then 
-					assert false report ("TB: Sending address");
+					assert false report ("TB: Sending " & integer'image(tb_bit_cnt - 1) & "th address");
 					sda <= slave_addr(tb_bit_cnt - 1);
 					tb_bit_cnt <= tb_bit_cnt + 1;
 					blah_cnt <= blah_cnt + 1; 
@@ -117,9 +117,9 @@ begin -- begin Architecture
 
 
 			if state_reg = ack_one_state then
-				assert false report ("TB: in ack_one_state");
+				assert false report ("TB: in ack one and write state");
 				if tb_bit_cnt = 9 and rising_edge(clk) then 
-					assert false report ("TB: ack_one");
+					--assert false report ("TB: ack_one");
 					ack_one <= '0';
 					tb_bit_cnt <= 0;
 
@@ -131,6 +131,7 @@ begin -- begin Architecture
 				
 				if ack_one = '0' and tb_bit_cnt < 8 then
 					if rising_edge(clk) then
+						assert false report ("TB: sending " & integer'image(tb_bit_cnt) & "th bit of Data");
 						sda <= data_to_master(tb_bit_cnt);
 						tb_bit_cnt <= tb_bit_cnt + 1;
 						blah_cnt <= blah_cnt + 1;
