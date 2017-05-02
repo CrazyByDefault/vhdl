@@ -53,6 +53,15 @@ We're gonna be building ghdl with a gcc backend. This will take slightly more di
 
 Now, you can use ghdl normally as a terminal command to compile and run vhdl files! :D
 
+##### Makefile
+
+Our makefile has the following recipes - 
+
+```
+all - Compiles all the required files
+run - Runs the compiled files
+with-gtkwave - Compiles and runs the files, as well as makes 
+
 ##### This is how to compile and run a vhdl file
 
 Write a vhdl code in a text file and save it with `.vhdl` file extension. 
