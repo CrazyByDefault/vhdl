@@ -31,7 +31,7 @@
 
   \begin{figure}[p]
     \includegraphics[width=\textwidth]{i2c_concept.png}
-    \caption{The I2C protocol}
+    \label{Figure 1: The I2C protocol}
   \end{figure}
 
 
