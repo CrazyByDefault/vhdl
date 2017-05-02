@@ -28,7 +28,7 @@ Integrated circuits are more expensive when they have more pins. To reduce the n
 
   
     \section{The physical I$^{2}$C bus}
-    $I^{2}C$ (Inter-Integrated Circuit),  is a multi-master, multi-slave, packet switched, single-ended, serial computer bus invented by Phillips Semiconductor. It is typically used for attaching lower-speed peripheral ICs to processors and micro-controllers in short-distance, intra-board communication.I²C is appropriate for peripherals where simplicity and low manufacturing cost are more important than speed. \newline SCL is the clock line. It is used to synchronize all data transfers over the I$^{2}$C bus. SDA is the data line. The SCL and SDA lines are connected to all devices on the I$^{2}$C bus.
+    I$^{2}$C (Inter-Integrated Circuit),  is a multi-master, multi-slave, packet switched, single-ended, serial computer bus invented by Phillips Semiconductor. It is typically used for attaching lower-speed peripheral ICs to processors and micro-controllers in short-distance, intra-board communication.I²C is appropriate for peripherals where simplicity and low manufacturing cost are more important than speed. \newline SCL is the clock line. It is used to synchronize all data transfers over the I$^{2}$C bus. SDA is the data line. The SCL and SDA lines are connected to all devices on the I$^{2}$C bus.
 
   \subsection{Masters and Slaves}
       The devices on the I$^{2}$C bus are either masters or slaves. The master is always the device that drives the SCL clock line. The slaves are the devices that 
@@ -78,8 +78,8 @@ A start sequence is one of two special sequences defined for the I$^{2}$C bus, t
     as 1, then our I$^{2}$C repeats the process over again from start.
     \end{description}
   
-    \begin{figure}[h]
-    \includegraphics{I2C_State_diagram.png}
+    \begin{figure}[p]
+    \includegraphics[width=1.6\linewidth, height=20cm]{I2C_State_diagram.png}
     \caption{State Diagram}
     \end{figure}
 
