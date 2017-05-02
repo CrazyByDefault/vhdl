@@ -15,6 +15,14 @@ clean - Cleans up the .o, .cf and executable files from the directory
 ---
 <br />
 
+## The team is - 
+
+* EE16BTECH11026 - Aravind Ganesh
+* ES16BTECH11005 - Jeel Bhavsar
+* ES16BTECH11012 - Akshita Ramya
+* ES16BTECH11025 - V. V. Shashank
+* ES16BTECH11029 - Srinidhi Bachu
+
 ##### Here's how you build GHDL for Ubuntu, in case you haven't already - 
 
 We're gonna be building ghdl with a gcc backend. This will take slightly more disk-space (not by much) and a little longer to download the files for, but gcc should be the fastest backend for ghdl. Here we go -  
