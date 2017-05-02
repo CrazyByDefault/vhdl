@@ -20,8 +20,8 @@ architecture arch of i2c_tb is
 			);
 	end component; 
 
-	constant T : time := 1000 ns;
-	signal done_tx : boolean := false;
+	constant T : time := 1000 ns; -- period of the clock
+	signal done_tx : boolean := false; 
 	signal rw_bit : std_logic := '0';
 	signal sda, scl : std_logic := '1'; 
 	signal ack_one, ack_two : std_logic := '0';
@@ -44,7 +44,6 @@ begin -- begin Architecture
 			sda => sda, scl => scl,
 			ack_one => ack_one, 
 			ack_two => ack_two, 
-			--data_to_master => data_to_master, 
 			data_recieved_at_slave => data_recieved_at_slave);
 
 	--clock
@@ -61,23 +60,7 @@ begin -- begin Architecture
 			wait;
 		end if;		
 	end process;
-----ignore------------
----------------------------------------------------------------------------
-	--process 
-	--begin 
-	--	if done_tx = false then
-	--		scl <= not scl after T/2;
-	--	else
-	--		wait;
-	--	end if;
-	--end process;
-		--procedure wait_for(signal clk: std_logic; bool : boolean) is 
-		--begin 
-		--	for bool = true loop
-		--		wait until rising_edge(clk);
-		--	end loop;
-		--end procedure;
--------------------------------------------------------------------------------------
+
 	-- assigning data and address to sda and and sending it to slave register. 
 	process (clk)
 	begin		
@@ -96,20 +79,15 @@ begin -- begin Architecture
 					sda <= slave_addr(tb_bit_cnt - 1);
 					tb_bit_cnt <= tb_bit_cnt + 1;
 					blah_cnt <= blah_cnt + 1; 
-					--wait for 1 us;
 				end if;
 				
 				if tb_bit_cnt = 8 and rising_edge(clk) then 
 					assert false report ("TB: Sending rw bit");
 					sda <= rw_bit;
-					--assert false report ("TB: 1");
 					tb_bit_cnt <= tb_bit_cnt + 1;
-					--assert false report ("TB: 2");
 					blah_cnt <= blah_cnt + 1;
-					--assert false report ("TB: 3");
 					state_reg <= ack_one_state;
 					--assert false report ("TB: Leaving addr_tx");
-					--wait for 1 us;
 				end if;
 
 			end if;
@@ -118,7 +96,7 @@ begin -- begin Architecture
 			if state_reg = ack_one_state then
 				assert false report ("TB: in ack one and write state");
 				if tb_bit_cnt = 9 and rising_edge(clk) then 
-					--assert false report ("TB: ack_one");
+					assert false report ("TB: ack_one");
 					ack_one <= '0';
 					tb_bit_cnt <= 0;
 
@@ -126,7 +104,6 @@ begin -- begin Architecture
 
 				assert (ack_one = '0') report ("address not recieved") severity note;
 
-				--wait for 1 us;
 				
 				if ack_one = '0' and tb_bit_cnt < 8 then
 					if rising_edge(clk) then
@@ -134,8 +111,6 @@ begin -- begin Architecture
 						sda <= data_to_master(tb_bit_cnt);
 						tb_bit_cnt <= tb_bit_cnt + 1;
 						blah_cnt <= blah_cnt + 1;
-						--wait for 1 us;
-						--data_recieved_at_slave(i) <= sda;
 					end if;
 
 					if tb_bit_cnt = 8 then
@@ -149,13 +124,11 @@ begin -- begin Architecture
 
 				if (tb_bit_cnt = 8) and rising_edge(clk) then
 					ack_two <= '0';
-					--wait for 1 us;
 				end if;
 				
 			end if ;
 
 			assert (ack_two = '0') report ("data not recieved") severity note;
-			--assert (data_recieved_at_slave = data_to_master) report ("data not transmitted properly") severity note;
 			if blah_cnt = 50 then
 				done_tx <= true;
 			end if;

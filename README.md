@@ -61,6 +61,7 @@ Our makefile has the following recipes -
 all - Compiles all the required files
 run - Runs the compiled files
 with-gtkwave - Compiles and runs the files, as well as makes 
+```
 
 ##### This is how to compile and run a vhdl file
 
