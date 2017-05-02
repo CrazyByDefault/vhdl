@@ -5,7 +5,6 @@ use ieee.numeric_std.all;
 --use ieee.std_logic_textio.all;
 use std.textio.all;
 
-
 entity i2c is
   generic (
     SLAVE_ADDR : std_logic_vector(6 downto 0)

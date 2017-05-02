@@ -1,4 +1,21 @@
-The physical I2C bus
+\documentclass[10pt,twocolumn]{IEEEtran}
+
+\usepackage{ucs}
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor}
+\usepackage{fontenc}
+\usepackage{graphicx}
+\usepackage{minted}
+\usemintedstyle{monokai}
+\usepackage[dvips]{hyperref}
+
+\author{Aravind}
+\title{I2C Protocol}
+\date{02/05/2017}
+ 
+\begin{document}
+  \maketitle
+   The physical I2C bus
 
 SCL is the clock line. It is used to synchronize all data transfers over the I2C bus. SDA is the data line. The SCL & SDA lines are connected to all devices on the I2C bus.
 
@@ -14,24 +31,7 @@ I2C Device Addressing
 
 Here the I2C address is made of 7 bits. When sending out the 7 bit address, we still always send 8 bits. The extra bit is used to inform the slave if the master is  writing to it or reading from it. If the R/W bit is '0' the master is writing to the slave. If the bit is '1' the master is reading from the slave. The 7 bit address is placed in the upper 7 bits of the byte and the Read/Write (R/W) bit is in the LSB (Least Significant Bit).
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Theory of Operation
+   heory of Operation
 
 The I2C master we implemented uses the state machine depicted in Figure 2 to implement the I2C-bus protocol. Upon start-up, the component immediately enters the ready state(here, enters and remains in idle state till an edge trigger happens). 
 
@@ -47,3 +47,19 @@ Once state_reg hits write, it will keep receiving bits of data to write to slave
 Once bit_cnt equals 8, depending on the acknowledgment we receive from slave_hit_data , the state either ends the process (ack_two =0) or goes back to idle state(ack_two =1). 
 
 Once the process has finished running successfully (i.e. ack_two =0) it goes back to idle state and waits for the edge trigger (sda). If sda is received as 1, then our I2C repeats the process over again from start.
+  
+  \begin{minted}[
+    frame=lines,
+    framesep=2mm,
+    bgcolor=LightGray,
+    fontsize=\footnotesize,
+    linenos
+  ]{vhdl}
+-----------------
+----code here
+-----------------
+  \end{minted}
+
+\end{document}
+
+

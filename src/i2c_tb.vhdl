@@ -25,12 +25,12 @@ architecture arch of i2c_tb is
 	signal rw_bit : std_logic := '0';
 	signal sda, scl : std_logic := '1'; 
 	signal ack_one, ack_two : std_logic := '0';
-	signal data_to_master : std_logic_vector(7 downto 0) := "10101010";
+	signal data_to_master : std_logic_vector(0 to 7) := "01001110";
 	signal data_recieved_at_slave : std_logic_vector(7 downto 0);
 	signal clk : std_logic := '1';
 
 	signal tb_bit_cnt : integer :=  0;
-	constant slave_addr : std_logic_vector(6 downto 0) := "0101001";
+	constant slave_addr : std_logic_vector(0 to 6) := "0101001";
 	signal blah_cnt : integer := 0;
 
 	type state_t is (idle, addr_tx, ack_one_state, ack_two_state);
