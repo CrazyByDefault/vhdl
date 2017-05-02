@@ -1,7 +1,0 @@
-\BOOKMARK [1][-]{section.0}{Introduction}{}% 1
-\BOOKMARK [2][-]{subsection.0.1}{Serial communication}{section.0}% 2
-\BOOKMARK [1][-]{section.1}{The physical I2C bus}{}% 3
-\BOOKMARK [2][-]{subsection.1.1}{Masters and Slaves}{section.1}% 4
-\BOOKMARK [1][-]{section.2}{The I2C Physical Protocol}{}% 5
-\BOOKMARK [2][-]{subsection.2.1}{I2C Device Addressing}{section.2}% 6
-\BOOKMARK [1][-]{section.3}{Theory of Operation}{}% 7

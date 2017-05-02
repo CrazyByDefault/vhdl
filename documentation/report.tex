@@ -6,7 +6,6 @@
 \usepackage{graphicx}
 \usepackage{float}
 \usepackage[dvips]{hyperref}
-\setcounter{section}{-1}
 \title{I$^{2}$C Protocol}
 \date{02/05/2017}
  
@@ -24,20 +23,21 @@ In telecommunication and data transmission, serial communication is the process 
 
 Serial communication is used for all long-haul communication and most computer networks, where the cost of cable and synchronization difficulties make parallel communication impractical. Serial computer buses are becoming more common even at shorter distances, as improved signal integrity and transmission speeds in newer serial technologies have begun to outweigh the parallel bus' advantage of simplicity and to outstrip its disadvantages.
 
-Integrated circuits are more expensive when they have more pins. To reduce the number of pins in a package, many ICs use a serial bus to transfer data when speed is not important. Some examples of such low-cost serial buses include SPI, I²C, dc-bus, UNI/O, and 1-Wire.
+Integrated circuits are more expensive when they have more pins. To reduce the number of pins in a package, many ICs use a serial bus to transfer data when speed is not important. Some examples of such low-cost serial buses include SPI, I$^{2}$C, dc-bus, UNI/O, and 1-Wire.
 
   
     \section{The physical I$^{2}$C bus}
-    I$^{2}$C (Inter-Integrated Circuit),  is a multi-master, multi-slave, packet switched, single-ended, serial computer bus invented by Phillips Semiconductor. It is typically used for attaching lower-speed peripheral ICs to processors and micro-controllers in short-distance, intra-board communication.I²C is appropriate for peripherals where simplicity and low manufacturing cost are more important than speed. \newline SCL is the clock line. It is used to synchronize all data transfers over the I$^{2}$C bus. SDA is the data line. The SCL and SDA lines are connected to all devices on the I$^{2}$C bus.
+    I$^{2}$C (Inter-Integrated Circuit),  is a multi-master, multi-slave, packet switched, single-ended, serial computer bus invented by Phillips Semiconductor. It is typically used for attaching lower-speed peripheral ICs to processors and micro-controllers in short-distance, intra-board communication. I$^{2}$C is appropriate for peripherals where simplicity and low manufacturing cost are more important than speed. \newline SCL is the clock line. It is used to synchronize all data transfers over the I$^{2}$C bus. SDA is the data line. The SCL and SDA lines are connected to all devices on the I$^{2}$C bus.
 
   \subsection{Masters and Slaves}
       The devices on the I$^{2}$C bus are either masters or slaves. The master is always the device that drives the SCL clock line. The slaves are the devices that 
-      respond to the master. There can be, and usually are, multiple slaves on the I$^{2}$C bus.Slaves will never initiate a transfer. Both master and slave can transfer 
+      respond to the master. There can be, and usually are, multiple slaves on the I$^{2}$C bus. Slaves will never initiate a transfer. Both master and slave can transfer 
       data over the I$^{2}$C bus, but that transfer is always controlled by the master.
   
   \section{The I$^{2}$C Physical Protocol}
 
-    Data is transferred in sequences of 8 bits. The bits are placed on the SDA line starting with the MSB (Most Significant Bit). The SCL line is then pulsed high, then low.For every 8 bits transferred, the slave receiving the data sends back an acknowledge bit, so there are actually 9 SCL clock pulses to transfer each byte of data. If the slave sends back a low ACK bit, then it has received the data and is ready to accept another byte. If a high is sent, then it indicates no further data can be accepted. 
+    Data is transferred in sequences of 8 bits. The bits are placed on the SDA line starting with the MSB (Most Significant Bit). The SCL line is then pulsed high, then low. For every 8 bits transferred, the slave receiving the data sends back an acknowledge bit, so there are actually 9 SCL clock pulses to transfer each byte of data. If the slave sends back a low ACK bit, then it has received the data and is ready to accept another byte. If a high is sent, then it indicates no further data can be accepted. 
+    \newline
 A start sequence is one of two special sequences defined for the I$^{2}$C bus, the other being the stop sequence. The start sequence and stop sequence are special in that these are the only places where the SDA (data line) is allowed to change while the SCL (clock line) is high. When data is being transferred, SDA must remain stable and not change whilst SCL is high. The start and stop sequences mark the beginning and end of a transaction with the slave device.
 
   \begin{figure}[H]
@@ -60,14 +60,14 @@ A start sequence is one of two special sequences defined for the I$^{2}$C bus, t
   \section{Theory of Operation}
     \begin{description}
      
-     \item[$\bullet$] The I$^{2}$C master we implemented uses the state machine depicted in FIgure 3 to implement the I$^{2}$C-bus protocol. Upon start-up, the component immediately enters the ready state(here, enters and remains in idle state till an edge trigger happens). 
+     \item[$\bullet$] The I$^{2}$C master we implemented uses the state machine depicted in Figure 3 to implement the I$^{2}$C-bus protocol. Upon start-up, the component immediately enters the ready state(here, enters and remains in idle state till an edge trigger happens). 
 
      \item[$\bullet$] Once an edge trigger happens the start state generates the start condition on the I$^{2}$C bus, and the command state communicates the address(start\_addr\_tx) and rw command to the bus. 
 
     \item[$\bullet$] The slv\_ack1 state(slave\_hit\_addr) then captures and verifies the slave’s acknowledgment(ack\_one), if not acknowledged goes back to idle state. 
 
     \item[$\bullet$]Depending on the rw command, the component then proceeds to either write data to the slave (wr state) or receive data from the slave (rd state). 
-    In our implementation, we have dealt with write only. If it hits read,it goes back to idle state.
+    In our implementation, we have dealt with write only. If it hits read, it goes back to idle state.
 
     \item[$\bullet$] Once state\_reg hits write, it will keep receiving bits of data to write to slave till bit\_cnt reaches 7 (8 bits of data sent).
 
