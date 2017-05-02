@@ -12,7 +12,7 @@
 %\usemintedstyle{monokai}
 \usepackage{float}
 \usepackage[dvips]{hyperref}
-
+\setcounter{section}{-1}
 %\author{Aravind}
 \title{I2C Protocol}
 \date{02/05/2017}
@@ -20,6 +20,24 @@
 \begin{document}
  %With \verb!\_!:
   \maketitle
+    \section{Introduction}
+    
+     Embedded electronics is all about interlinking circuits (processors or other integrated circuits) to create a symbiotic system. In order for those individual circuits to swap
+     their information, they must share a common communication protocol. Hundreds of communication protocols have been defined to achieve this data exchange, and, in general, each can 
+     be separated into one of two categories: parallel or serial.
+
+In computer architecture, a bus is a communication system that transfers data between components inside a computer, or between computers. This expression covers all related hardware components 
+(wire, optical fiber, etc.) and software, including communication protocols.
+
+   \subsection {Serial communication}
+
+In telecommunication and data transmission, serial communication is the process of sending data one bit at a time, sequentially, over a communication channel or computer bus. This is in contrast to parallel communication, where several bits are sent as a whole, on a link with several parallel channels.
+
+Serial communication is used for all long-haul communication and most computer networks, where the cost of cable and synchronization difficulties make parallel communication impractical. Serial computer buses are becoming more common even at shorter distances, as improved signal integrity and transmission speeds in newer serial technologies have begun to outweigh the parallel bus' advantage of simplicity and to outstrip its disadvantages .
+
+Integrated circuits are more expensive when they have more pins. To reduce the number of pins in a package, many ICs use a serial bus to transfer data when speed is not important. Some examples of such low-cost serial buses include SPI, I²C, dc-bus, UNI/O, and 1-Wire.
+
+  
     \section{The physical I2C bus}
     SCL is the clock line. It is used to synchronize all data transfers over the I2C bus. SDA is the data line. The SCL and SDA lines are connected to all devices 
     on the I2C bus.
@@ -29,10 +47,7 @@
       respond to the master. There can be, and usually are, multiple slaves on the I2C bus.Slaves will never initiate a transfer. Both master and slave can transfer 
       data over the I2C bus, but that transfer is always controlled by the master.
 
-  \begin{figure}[p]
-    \includegraphics[width=\textwidth]{i2c_concept.png}
-    \label{Figure 1: The I2C protocol}
-  \end{figure}
+  
 
 
   \section{The I2C Physical Protocol}
@@ -46,35 +61,45 @@ in that these are the only places where the SDA (data line) is allowed to change
 remain stable and not change whilst SCL is high. The start and stop sequences mark the beginning and end of a transaction with the slave device.
 
   \begin{figure}[H]
-    \includegraphics[width=0.5\linewidth]{start_stop_seq.jpeg}
+    \includegraphics[width=\linewidth]{start_stop_seq.jpeg}
   \end{figure}
 
 
 
 
     \subsection{I2C Device Addressing}
-	Here the I2C address is made of 7 bits. When sending out the 7 bit address, we still always send 8 bits. The extra bit is used to inform the slave if the master is  writing to it or reading from it. If the R/W bit is '0' the master is writing to the slave. If the bit is '1' the master is reading from the slave. The 7 bit address is placed in the upper 7 bits of the byte and the Read/Write (R/W) bit is in the LSB (Least Significant Bit).
+	Here, the I2C address has 7 bits. When sending out the 7 bit address, we still always send 8 bits. The extra bit indicates if the master is writing to or reading from the slave.
+	If the R/W bit is '0' the master is writing to the slave. If the bit is '1', the master is reading from the slave. The 7 bit address is placed in the upper 7 bits of the byte and 
+	the Read/Write (R/W) bit is the LSB (Least Significant Bit).
+	
+    \begin{figure}[H]
+	  \includegraphics[width=\textwidth]{i2c_concept.png}
+	  \caption{The I2C protocol}
+     \end{figure}
+
 
   \section{Theory of Operation}
-    The I2C master we implemented uses the state machine depicted in Figure 1 to implement the I2C-bus protocol. Upon start-up, the component immediately
-    enters the ready state(here, enters and remains in idle state till an edge trigger happens). 
+    \begin{description}
+     
+     \item[$\bullet$] The I2C master we implemented uses the state machine depicted in Figure 1 to implement the I2C-bus protocol. Upon start-up, the component immediately
+      enters the ready state(here, enters and remains in idle state till an edge trigger happens). 
 
-    Once an edge trigger happens the start state generates the start condition on the I2C bus, and the command state communicates the address(start\_addr\_tx) 
+     \item[$\bullet$] Once an edge trigger happens the start state generates the start condition on the I2C bus, and the command state communicates the address(start\_addr\_tx) 
     and rw command to the bus. 
 
-    The slv\_ack1 state(slave\_hit\_addr) then captures and verifies the slave’s acknowledgment(ack\_one), if not acknowledged goes back to idle state. 
+    \item[$\bullet$] The slv\_ack1 state(slave\_hit\_addr) then captures and verifies the slave’s acknowledgment(ack\_one), if not acknowledged goes back to idle state. 
 
-    Depending on the rw command, the component then proceeds to either write data to the slave (wr state) or receive data from the slave (rd state). 
+    \item[$\bullet$]Depending on the rw command, the component then proceeds to either write data to the slave (wr state) or receive data from the slave (rd state). 
     In our implementation, we have dealt with write only. If it hits read,it goes back to idle state.
 
-    Once state\_reg hits write, it will keep receiving bits of data to write to slave till bit\_cnt reaches 7 (8 bits of data sent).
+    \item[$\bullet$] Once state\_reg hits write, it will keep receiving bits of data to write to slave till bit\_cnt reaches 7 (8 bits of data sent).
 
-    Once bit\_cnt equals 8, depending on the acknowledgment we receive from slave\_hit\_data , the state either ends the process (ack\_two =0) or goes back 
+    \item[$\bullet$] Once bit\_cnt equals 8, depending on the acknowledgment we receive from slave\_hit\_data , the state either ends the process (ack\_two =0) or goes back 
     to idle state(ack\_two =1). 
 
-    Once the process has finished running successfully (i.e. ack\_two =0) it goes back to idle state and waits for the edge trigger (sda). If sda is received 
+    \item[$\bullet$] Once the process has finished running successfully (i.e. ack\_two =0) it goes back to idle state and waits for the edge trigger (sda). If sda is received 
     as 1, then our I2C repeats the process over again from start.
-
+    \end{description}
   
  % \begin{minted}[
 %     frame=lines,
