@@ -11,6 +11,7 @@ with-gtkwave - Compiles and runs the files, as well as creates the GTKWave file
 clean - Cleans up the .o, .cf and executable files from the directory
 ```
 
+<br />
 ---
 <br />
 
