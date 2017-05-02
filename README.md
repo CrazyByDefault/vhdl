@@ -1,11 +1,15 @@
 ### Agents of Chaos' Embedded Programming project.
 
+##### Running the code
 
-##### All code goes into src, all documentation shiz goes into documentation
+The makefile has the following recipes - 
 
-- Let's not all work on master. Everyone make your branches, work there. After we figure out what's working well and what isn't we'll all jump to master.
-- Keep talking about stuff on the WhatsApp group. If you're working on master, after each push, mention it on the group.
-- If you have no idea what I've just said, here's a Git tutorial - [click this](https://try.github.io/)
+```
+all - Compiles all the required files
+run - Runs the compiled files
+with-gtkwave - Compiles and runs the files, as well as creates the GTKWave file
+clean - Cleans up the .o, .cf and executable files from the directory
+```
 
 ---
 <br />
@@ -53,15 +57,6 @@ We're gonna be building ghdl with a gcc backend. This will take slightly more di
 
 Now, you can use ghdl normally as a terminal command to compile and run vhdl files! :D
 
-##### Makefile
-
-Our makefile has the following recipes - 
-
-```
-all - Compiles all the required files
-run - Runs the compiled files
-with-gtkwave - Compiles and runs the files, as well as makes 
-```
 
 ##### This is how to compile and run a vhdl file
 
