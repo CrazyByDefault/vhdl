@@ -1,9 +1,8 @@
-## Documentation for the project - LaTeX. 
+# Documentation for the project - LaTeX. 
 
+## The final report is titled report.pdf
 
-# Please don't use online LaTeX editors. Please. 
-
-### Install it on your lappy, run it locally. It's time taking, but not hard. Here are the required instructions - 
+#### To edit the tex files, install tex on your machine and run it locally. The download is time taking, but not hard. Here are the required instructions - 
 
 On Ubuntu/Debian, type this into the terminal -
 
