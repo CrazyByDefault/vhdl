@@ -1,6 +1,6 @@
-### Agents of Chaos' Embedded Programming project.
+# Agents of Chaos' Embedded Programming project.
 
-##### Running the code
+## Running the code
 
 The makefile has the following recipes - 
 
@@ -10,8 +10,8 @@ run - Runs the compiled files
 with-gtkwave - Compiles and runs the files, as well as creates the GTKWave file
 clean - Cleans up the .o, .cf and executable files from the directory
 ```
+<br />  
 
-<br />
 ---
 <br />
 
